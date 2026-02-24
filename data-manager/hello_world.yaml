@@ -1,0 +1,143 @@
+---
+kind: DataManagerJobDefinition
+kind-version: '2021.1'
+name: Hello World
+collection: cedric-test
+
+jobs:
+  hello-world:
+    name: Hello World
+    description: >-
+      Simple python script that writes a prompt (eg "Hello World!") into a .txt file
+    version: '1.0.0'
+    category: test
+    keywords:
+    - test
+    image:
+      name: cvallee/test
+      tag: 'test'
+      project-directory: /test
+      working-directory: /test
+      fix-permissions: true
+    command: >-
+      pyhton -m hello_world --input '{{ inputPrompt }}'
+      --output '{{ outputFile }}'
+      {% if encoding is defined %}--encoding {{ encoding }}{% endif %}
+    variables:
+      order:
+        options
+      inputs:
+        type: object
+        required:
+        - inputPrompt
+        properties:
+          inputPrompt:
+            title: Prompt to write into the output file.
+            type: string
+      outputs:
+        type: object
+        properties:
+          outputFile:
+            title: Output file
+            mime-types:
+            - text/plain
+            creates: '{{ outputFile }}'
+            type: file
+      options:
+        type: object
+        required:
+        - outputFile
+        properties:
+          outputFile:
+            title: Output file name (default prompt.txt)
+            type: string
+            pattern: "^[A-Za-z0-9_/\\.\\-]+$"
+            default: prompt.txt
+          encoding:
+            title: Encoding (default utf-8)
+            type: string
+            enum:
+              - utf-8
+              - utf_16
+              - utf_32
+              - ascii
+              - latin_1
+              - mac_latin2
+    tests:
+      simple-execution:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt.txt
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt.txt
+            checks:
+            - exists: true
+            - lineCount: 2
+      utf16-test:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt_utf16.txt
+          encoding: utf_16
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_utf16.txt
+            checks:
+            - exists: true
+            - lineCount: 2
+      utf32-test:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt_utf32.txt
+          encoding: utf_32
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_utf32.txt
+            checks:
+            - exists: true
+            - lineCount: 2
+      ascii-test:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt_ascii.txt
+          encoding: ascii
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_ascii.txt
+            checks:
+            - exists: true
+            - lineCount: 2
+      latin1-test:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt_latin1.txt
+          encoding: latin_1
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_latin1.txt
+            checks:
+            - exists: true
+            - lineCount: 2
+      maclatin2-test:
+        inputs:
+          inputPrompt: "Hello World!"
+        options:
+          outputFile: prompt_maclatin2.txt
+          encoding: mac_latin_2
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_maclatin2.txt
+            checks:
+            - exists: true
+            - lineCount: 2
