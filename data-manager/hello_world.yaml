@@ -16,8 +16,8 @@ jobs:
     image:
       name: cvallee/test
       tag: 'test'
-      project-directory: /test
-      working-directory: /test
+      project-directory: /data
+      working-directory: /data
       fix-permissions: true
     command: >-
       pyhton -m hello_world --input '{{ inputPrompt }}'
@@ -25,15 +25,10 @@ jobs:
       {% if encoding is defined %}--encoding {{ encoding }}{% endif %}
     variables:
       order:
-        options
-      inputs:
-        type: object
-        required:
+        options:
         - inputPrompt
-        properties:
-          inputPrompt:
-            title: Prompt to write into the output file.
-            type: string
+        - outputFile
+        - encoding
       outputs:
         type: object
         properties:
@@ -46,8 +41,13 @@ jobs:
       options:
         type: object
         required:
+        - inputPrompt
         - outputFile
         properties:
+          inputPrompt:
+            title: Prompt to write into the output file (default Hello World).
+            type: string
+            default: "Hello World!"
           outputFile:
             title: Output file name (default prompt.txt)
             type: string
@@ -57,17 +57,16 @@ jobs:
             title: Encoding (default utf-8)
             type: string
             enum:
-              - utf-8
-              - utf_16
-              - utf_32
-              - ascii
-              - latin_1
-              - mac_latin2
+            - utf-8
+            - utf_16
+            - utf_32
+            - ascii
+            - latin_1
+            - mac_latin2
     tests:
       simple-execution:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt.txt
         checks:
           exitCode: 0
@@ -77,9 +76,8 @@ jobs:
             - exists: true
             - lineCount: 2
       utf16-test:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt_utf16.txt
           encoding: utf_16
         checks:
@@ -90,9 +88,8 @@ jobs:
             - exists: true
             - lineCount: 2
       utf32-test:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt_utf32.txt
           encoding: utf_32
         checks:
@@ -103,9 +100,8 @@ jobs:
             - exists: true
             - lineCount: 2
       ascii-test:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt_ascii.txt
           encoding: ascii
         checks:
@@ -116,9 +112,8 @@ jobs:
             - exists: true
             - lineCount: 2
       latin1-test:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt_latin1.txt
           encoding: latin_1
         checks:
@@ -129,9 +124,8 @@ jobs:
             - exists: true
             - lineCount: 2
       maclatin2-test:
-        inputs:
-          inputPrompt: "Hello World!"
         options:
+          inputPrompt: "Hello World!"
           outputFile: prompt_maclatin2.txt
           encoding: mac_latin_2
         checks:
