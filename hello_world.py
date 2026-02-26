@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import time
 from dm_job_utilities.dm_log import DmLog

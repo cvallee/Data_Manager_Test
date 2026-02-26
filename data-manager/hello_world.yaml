@@ -14,13 +14,13 @@ jobs:
     keywords:
     - test
     image:
-      name: cvallee/test
+      name: kgr26424/hello-world
       tag: 'test'
-      project-directory: /data
-      working-directory: /data
+      project-directory: /test
+      working-directory: /test
       fix-permissions: true
     command: >-
-      pyhton -m hello_world --input '{{ inputPrompt }}'
+      python -m hello_world --input '{{ inputPrompt }}'
       --output '{{ outputFile }}'
       {% if encoding is defined %}--encoding {{ encoding }}{% endif %}
     variables:
@@ -74,7 +74,7 @@ jobs:
           - name: prompt.txt
             checks:
             - exists: true
-            - lineCount: 2
+            - lineCount: 1
       utf16-test:
         options:
           inputPrompt: "Hello World!"
