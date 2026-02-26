@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
 import argparse
 import time
 from dm_job_utilities.dm_log import DmLog
 
 def write_file(prompt, output, encoding):
-	text_to_write = list(prompt.split("\n"))
+	text_to_write = list(prompt.split("\\n"))
 	DmLog.emit_event(f"Writting '{prompt}' into {output} with {encoding.upper()} encoding")
 	t0 = time.time()
 	with open(output, 'w', encoding=encoding) as f:

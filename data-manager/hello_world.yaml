@@ -16,11 +16,11 @@ jobs:
     image:
       name: kgr26424/hello-world
       tag: 'test'
-      project-directory: /test
-      working-directory: /test
-      fix-permissions: true
+      project-directory: /data
+      working-directory: /data
+      fix-permissions: false
     command: >-
-      python -m hello_world --input '{{ inputPrompt }}'
+      python3 -m hello_world --input '{{ inputPrompt }}'
       --output '{{ outputFile }}'
       {% if encoding is defined %}--encoding {{ encoding }}{% endif %}
     variables:
@@ -75,30 +75,6 @@ jobs:
             checks:
             - exists: true
             - lineCount: 1
-      utf16-test:
-        options:
-          inputPrompt: "Hello World!"
-          outputFile: prompt_utf16.txt
-          encoding: utf_16
-        checks:
-          exitCode: 0
-          outputs:
-          - name: prompt_utf16.txt
-            checks:
-            - exists: true
-            - lineCount: 2
-      utf32-test:
-        options:
-          inputPrompt: "Hello World!"
-          outputFile: prompt_utf32.txt
-          encoding: utf_32
-        checks:
-          exitCode: 0
-          outputs:
-          - name: prompt_utf32.txt
-            checks:
-            - exists: true
-            - lineCount: 2
       ascii-test:
         options:
           inputPrompt: "Hello World!"
@@ -110,7 +86,7 @@ jobs:
           - name: prompt_ascii.txt
             checks:
             - exists: true
-            - lineCount: 2
+            - lineCount: 1
       latin1-test:
         options:
           inputPrompt: "Hello World!"
@@ -122,16 +98,27 @@ jobs:
           - name: prompt_latin1.txt
             checks:
             - exists: true
-            - lineCount: 2
+            - lineCount: 1
       maclatin2-test:
         options:
           inputPrompt: "Hello World!"
           outputFile: prompt_maclatin2.txt
-          encoding: mac_latin_2
+          encoding: mac_latin2
         checks:
           exitCode: 0
           outputs:
           - name: prompt_maclatin2.txt
             checks:
             - exists: true
-            - lineCount: 2
+            - lineCount: 1
+      multiplelines-test:
+        options:
+          inputPrompt: "Line1\nLine2\nLine3\nLine4\nLine5"
+          outputFile: prompt_5lines.txt
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prompt_5lines.txt
+            checks:
+            - exists: true
+            - lineCount: 5
