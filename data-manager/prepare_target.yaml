@@ -1,0 +1,145 @@
+---
+kind: DataManagerJobDefinition
+kind-version: '2021.1'
+name: Compound Desing Worflow
+collection: cedric-test
+
+jobs:
+  prepare-target:
+    name: Prepare Target
+    description: >-
+      Download target from Fragalysis and add hits to HIPPO database.
+    version: '1.0.0'
+    category: test
+    keywords:
+    - test
+    image:
+      name: kgr26424/squonk-test
+      tag: 'test'
+      project-directory: /test
+      working-directory: /test
+      fix-permissions: false
+    command: >-
+      python -m prepare_target '{{ target }}' '{{ tas }}'
+      {% if destination is defined %}--destination '{{ destination }}'{% endif %}
+      {% if output is defined %}--output '{{ output }}'{% endif %}
+      {% if stack is defined %}--stack '{{ stack }}'{% endif %}
+      {% if token is defined %}--token '{{ token }}'{% endif %}
+      {% if name is defined %}--name '{{ name }}'{% endif %}
+      {% if db is defined %}--db '{{ db }}'{% endif %}
+      {% if soakdb is defined %}--soakdb '{{ soakdb }}'{% endif %}
+      {% if tag is defined %}--tag '{{ tag }}'{% endif %}
+      {% if to_fragalysis %}--to-fragalysis {% else %}--no-to-fragalysis{% endif %}
+      {% if method is defined %}--method '{{ method }}'{% endif %}
+      {% if submitter is defined %}--submitter '{{ submitter }}'{% endif %}
+      {% if email is defined %}--email '{{ email }}'{% endif %}
+      {% if institution is defined %}--institution '{{ institution }}'{% endif %}
+    variables:
+      order:
+        options:
+        - target
+        - tas
+        - destination
+        - output
+        - stack
+        - token
+        - name
+        - db
+        - soakdb
+        - tag
+        - to_fragalysis
+        - method
+        - submitter
+        - email
+        - institution
+      outputs:
+        type: object
+        properties:
+          target:
+            title: Name of the target to request as shown in Fragalysis (e.g. A71EV2A).
+            mime-types:
+            - application/x-tar
+            creates: '{% if destination is defined %}{{ destination }}/{% endif %}{{ target }}.tar.gz'
+            type: file
+          db:
+            title: Name of the HIPPO database file
+            mime-types:
+            - application/x-sqlite3
+            creates: '{% if db is defined %}{{ db }}{% else %}{% if destination is defined %}{{ destination }}{% else %}.{% endif %}/$[toLower({{ target }})].sqlite{% endif %}'
+            type: file
+          output:
+            title: "Optional path of the output SDF file (default: '{destination}/{target.lower()}.sdf')."
+            mime-types:
+            - chemical/x-mdl-sdfile
+            creates: '{% if output is defined %}{{ output }}{% else %}{% if destination is defined %}{{ destination }}{% else %}.{% endif %}/$[toLower({{ target }})].sdf{% endif %}'
+            type: file
+      options:
+        type: object
+        required:
+        - target
+        - tas
+        properties:
+          target:
+            title: Name of the target to request as shown in Fragalysis (e.g. A71EV2A).
+            type: string
+          tas:
+            title: Name of the target access string (or TAS) as shown in Fragalysis (e.g. lb32627-66).
+            type: string
+          destination:
+            title: "Directory within which to place the download (default: current working directory)."
+            type: string
+          output:
+            title: "Optional path of the output SDF file (default: '{destination}/{target.lower()}.sdf')."
+            type: string
+          stack:
+            title: Name (either 'production', 'staging', 'matej-dev') or URL of the stack to download the data from.
+            type: string
+          token:
+            title: Optional authentication token (can be obtain in Fragalysis using 'Get Token' from the HOME MENU).
+            type: string
+          name:
+            title: "Optional name of the HIPPO database (defaut: '{target}-DB')."
+            type: string
+          db:
+            title: "Optional path of the HIPPO database file (defaut: '{destination}/{target.lower()}.sqlite')."
+            type: string
+          soakdb:
+            title: Optional path to the SoakDB file.
+            type: string
+          tag:
+            title: Optional tag to select the poses to write in the SDF file.
+            type: string
+          to_fragalysis:
+            title: Optional boolean to write SDF file to export into Fragalysis (True, default) or to write simple SDF file (False).
+            type: boolean
+          method:
+            title: Required argument if 'to_fragalysis' option is True. Name of the method used to generate the compounds.
+            type: string
+          submitter:
+            title: Required argument if 'to_fragalysis' option is True. Name of the submitter.
+            type: string
+          email:
+            title: Required argument if 'to_fragalysis' option is True. Email of the submitter.
+            type: string
+          institution:
+            title: Required argument if 'to_fragalysis' option is True. Institution of the submitter.
+            type: string
+    tests:
+      prepare-a71ev2a:
+        options:
+          target: "A71EV2A"
+          tas: "lb32627-66"
+          destination: "prepare_target_test/"
+          to_fragalysis: false
+        checks:
+          exitCode: 0
+          outputs:
+          - name: prepare_target_test/A71EV2A.tar.gz
+            checks:
+            - exists: true
+          - name: prepare_target_test/a71ev2a.sqlite
+            checks:
+            - exists: true
+          - name: prepare_target_test/a71ev2a.sdf
+            checks:
+            - exists: true

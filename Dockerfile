@@ -1,8 +1,8 @@
 FROM python:3.14.3
 
-ENV PYTHONPATH=/test
 ENV HOME=/test
 WORKDIR ${HOME}
+ENV PYTHONPATH=${HOME}/code
 
 COPY . /test
 

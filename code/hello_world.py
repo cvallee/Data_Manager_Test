@@ -8,7 +8,8 @@ def write_file(prompt, output, encoding):
 	t0 = time.time()
 	with open(output, 'w', encoding=encoding) as f:
 		for line in text_to_write:
-			f.write(f"{line}\n")
+			#f.write(f"{line}\n")
+			print(line, file=f)
 	t1 = time.time()
 	DmLog.emit_event(f"Prompt '{prompt}' was written in {output} in {t1-t0}s")
 

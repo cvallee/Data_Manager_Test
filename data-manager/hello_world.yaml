@@ -14,13 +14,13 @@ jobs:
     keywords:
     - test
     image:
-      name: kgr26424/hello-world
+      name: kgr26424/squonk-test
       tag: 'test'
-      project-directory: /data
-      working-directory: /data
+      project-directory: /test
+      working-directory: /test
       fix-permissions: false
     command: >-
-      python3 -m hello_world --input '{{ inputPrompt }}'
+      python -m hello_world --input '{{ inputPrompt }}'
       --output '{{ outputFile }}'
       {% if encoding is defined %}--encoding {{ encoding }}{% endif %}
     variables:
@@ -113,7 +113,7 @@ jobs:
             - lineCount: 1
       multiplelines-test:
         options:
-          inputPrompt: "Line1\nLine2\nLine3\nLine4\nLine5"
+          inputPrompt: 'Line1\\nLine2\\nLine3\\nLine4\\nLine5'
           outputFile: prompt_5lines.txt
         checks:
           exitCode: 0

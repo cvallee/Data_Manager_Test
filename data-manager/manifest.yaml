@@ -4,3 +4,4 @@ kind-version: '2021.1'
 
 job-definition-files:
 - hello_world.yaml
+- prepare_target.yaml
